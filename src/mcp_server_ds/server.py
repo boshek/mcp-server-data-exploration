@@ -15,7 +15,7 @@ from mcp.types import (
     GetPromptResult,
     PromptMessage,
 )
-from mcp.server import NotificationOptions, Server, McpError
+from mcp.server import NotificationOptions, Server
 from pydantic import AnyUrl
 import mcp.server.stdio
 from pydantic import BaseModel
@@ -168,7 +168,7 @@ class ScriptRunner:
                 TextContent(type="text", text=f"Successfully loaded CSV into dataframe '{df_name}'")
             ]
         except Exception as e:
-            raise McpError(
+            raise Exception(
                 INTERNAL_ERROR, f"Error loading CSV: {str(e)}"
             ) from e
 
@@ -190,7 +190,7 @@ class ScriptRunner:
                 local_dict)
             std_out_script = stdout_capture.getvalue()
         except Exception as e:
-            raise McpError(INTERNAL_ERROR, f"Error running script: {str(e)}") from e
+            raise Exception(INTERNAL_ERROR, f"Error running script: {str(e)}") from e
 
         # check if the result is a dataframe
         if save_to_memory:
@@ -307,7 +307,7 @@ async def main():
             df_name = arguments.get("df_name")
             return script_runner.safe_eval(script, df_name)
         else:
-            raise McpError(INTERNAL_ERROR, f"Unknown tool: {name}")
+            raise Exception(INTERNAL_ERROR, f"Unknown tool: {name}")
         return None
 
     async with mcp.server.stdio.stdio_server() as (read_stream, write_stream):
